@@ -20,6 +20,8 @@ func TestGenerateCSRObject(t *testing.T) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	wd, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("error getting current directory: %v", err)

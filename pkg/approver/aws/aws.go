@@ -21,6 +21,8 @@ func newAWSCloud(regionName string) (*awsCloud, error) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	creds := credentials.NewChainCredentials([]credentials.Provider{&credentials.EnvProvider{}, &credentials.SharedCredentialsProvider{}, &ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.New(&aws.Config{}))}})
 	if regionName == "" {
 		mc := ec2metadata.New(session.New(&aws.Config{}))
@@ -44,6 +46,8 @@ func (c *awsCloud) instanceID(nodeName string) (string, error) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	privateDNSName := nodeName
 	filters := []*ec2.Filter{newEC2Filter("private-dns-name", privateDNSName), newEC2Filter("instance-state-name", "running")}
 	req := &ec2.DescribeInstancesInput{Filters: filters}
@@ -60,6 +64,8 @@ func (c *awsCloud) instanceID(nodeName string) (string, error) {
 	return aws.StringValue(instances[0].InstanceId), nil
 }
 func (c *awsCloud) autoScalingGroupID(nodeName string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -89,6 +95,8 @@ func (c *awsCloud) describeInstances(request *ec2.DescribeInstancesInput) ([]*ec
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	results := []*ec2.Instance{}
 	var nextToken *string
 	for {
@@ -108,6 +116,8 @@ func (c *awsCloud) describeInstances(request *ec2.DescribeInstancesInput) ([]*ec
 	return results, nil
 }
 func (c *awsCloud) describeAutoScalingInstances(request *autoscaling.DescribeAutoScalingInstancesInput) ([]*autoscaling.InstanceDetails, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -133,6 +143,8 @@ func azToRegion(az string) (string, error) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(az) < 1 {
 		return "", fmt.Errorf("invalid (empty) AZ")
 	}
@@ -140,6 +152,8 @@ func azToRegion(az string) (string, error) {
 	return region, nil
 }
 func newEC2Filter(name string, values ...string) *ec2.Filter {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()

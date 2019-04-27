@@ -18,6 +18,8 @@ func (ar *Approver) handle(csr *certificates.CertificateSigningRequest) error {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(4).Infof("handle: csr %v", csr)
 	if len(csr.Status.Certificate) != 0 {
 		return nil
@@ -66,9 +68,13 @@ func (ar *Approver) recognizers() []csrRecognizer {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return []csrRecognizer{{recognizers: []recognizerFunc{isSelfNodeClientCert, ar.isValidNode(ar.aws.instanceID), ar.isValidASG(ar.aws.autoScalingGroupID)}, successMessage: "kube-aws-approver approved self node client cert"}, {recognizers: []recognizerFunc{isNodeClientCert, ar.isValidNewNode(ar.aws.instanceID), ar.isValidASG(ar.aws.autoScalingGroupID)}, successMessage: "kube-aws-approver approved new node client cert"}}
 }
 func isNodeClientCert(csr *certificates.CertificateSigningRequest, x509cr *x509.CertificateRequest) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -92,6 +98,8 @@ func isSelfNodeClientCert(csr *certificates.CertificateSigningRequest, x509cr *x
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := isNodeClientCert(csr, x509cr); err != nil {
 		return err
 	}
@@ -104,6 +112,8 @@ func isSelfNodeClientCert(csr *certificates.CertificateSigningRequest, x509cr *x
 type instanceIDFunc func(nodeName string) (string, error)
 
 func (ar *Approver) isValidNewNode(f instanceIDFunc) recognizerFunc {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -136,6 +146,8 @@ func (ar *Approver) isValidNewNode(f instanceIDFunc) recognizerFunc {
 	}
 }
 func (ar *Approver) isValidNode(f instanceIDFunc) recognizerFunc {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -175,6 +187,8 @@ func (ar *Approver) isValidASG(f autoScalingGroupIDFunc) recognizerFunc {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func(csr *certificates.CertificateSigningRequest, x509cr *x509.CertificateRequest) error {
 		nn, err := getNodeNameFromCN(x509cr.Subject.CommonName)
 		if err != nil {
@@ -195,6 +209,8 @@ func getCertApprovalCondition(status *certificates.CertificateSigningRequestStat
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, c := range status.Conditions {
 		if c.Type == certificates.CertificateApproved {
 			approved = true
@@ -209,6 +225,8 @@ func getCertApprovalCondition(status *certificates.CertificateSigningRequestStat
 var kubeletClientUsages = []certificates.KeyUsage{certificates.UsageKeyEncipherment, certificates.UsageDigitalSignature, certificates.UsageClientAuth}
 
 func hasExactUsages(csr *certificates.CertificateSigningRequest, usages []certificates.KeyUsage) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -232,6 +250,8 @@ func getNodeNameFromCN(cn string) (string, error) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	nn := strings.TrimPrefix(cn, "system:node:")
 	if nn == cn {
 		return "", fmt.Errorf("error system:node: prefix not found")
@@ -239,6 +259,8 @@ func getNodeNameFromCN(cn string) (string, error) {
 	return nn, nil
 }
 func getInstanceIDFromUsername(username string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()

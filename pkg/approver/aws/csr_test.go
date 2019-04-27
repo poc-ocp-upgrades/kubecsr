@@ -27,6 +27,8 @@ func TestHasKubeletUsages(t *testing.T) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	cases := []struct {
 		usages		[]certificates.KeyUsage
 		expected	bool
@@ -38,6 +40,8 @@ func TestHasKubeletUsages(t *testing.T) {
 	}
 }
 func TestClientCert(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -83,6 +87,8 @@ func TestClientCert(t *testing.T) {
 	}
 }
 func TestIsValidNewNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -200,6 +206,8 @@ func TestIsValidNewNode(t *testing.T) {
 	}
 }
 func TestIsValidNode(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -325,6 +333,8 @@ func TestIsValidASG(t *testing.T) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	nodetoasg := map[string]string{"valid-node": "asg-1", "another-node": "asg-2"}
 	wasgs := []string{"asg-1"}
 	cases := []struct {
@@ -361,6 +371,8 @@ func mapNodesToInstanceIDs(m map[string]string) instanceIDFunc {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func(nodeName string) (string, error) {
 		id, ok := m[nodeName]
 		if !ok {
@@ -370,6 +382,8 @@ func mapNodesToInstanceIDs(m map[string]string) instanceIDFunc {
 	}
 }
 func mapNodesToASGs(m map[string]string) autoScalingGroupIDFunc {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -395,6 +409,8 @@ type csrBuilder struct {
 }
 
 func makeTestCSR(t *testing.T, b csrBuilder) *certificates.CertificateSigningRequest {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()

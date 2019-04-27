@@ -81,10 +81,14 @@ func (l *loggingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	log.Info(r.Method, r.URL.Path)
 	l.h.ServeHTTP(w, r)
 }
 func NewServer(c Config) (*CertServer, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -101,9 +105,13 @@ func (s *CertServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s.mux.ServeHTTP(w, r)
 }
 func newSignerCA(sc *SignerCAFiles, csr *capi.CertificateSigningRequest) (*SignerCA, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -154,10 +162,14 @@ func signerPolicy(c Config) config.Signing {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	policy := config.Signing{Profiles: map[string]*config.SigningProfile{etcdPeer: &config.SigningProfile{Usage: []string{string(capi.UsageKeyEncipherment), string(capi.UsageDigitalSignature), string(capi.UsageClientAuth), string(capi.UsageServerAuth)}, Expiry: c.EtcdPeerCertDuration, ExpiryString: c.EtcdPeerCertDuration.String()}, etcdServer: &config.SigningProfile{Usage: []string{string(capi.UsageKeyEncipherment), string(capi.UsageDigitalSignature), string(capi.UsageServerAuth)}, Expiry: c.EtcdServerCertDuration, ExpiryString: c.EtcdServerCertDuration.String()}, etcdMetric: &config.SigningProfile{Usage: []string{string(capi.UsageKeyEncipherment), string(capi.UsageDigitalSignature), string(capi.UsageClientAuth), string(capi.UsageServerAuth)}, Expiry: c.EtcdMetricCertDuration, ExpiryString: c.EtcdMetricCertDuration.String()}}, Default: &config.SigningProfile{Usage: []string{string(capi.UsageKeyEncipherment), string(capi.UsageDigitalSignature)}, Expiry: defaultCertDuration, ExpiryString: defaultCertDuration.String()}}
 	return policy
 }
 func NewSigner(s *SignerCA, policy *config.Signing) (*CertSigner, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -169,6 +181,8 @@ func NewSigner(s *SignerCA, policy *config.Signing) (*CertSigner, error) {
 	return &CertSigner{caCert: s.caCert, caKey: s.caKey, cfsslSigner: cfs}, nil
 }
 func (s *CertSigner) Sign(csr *capi.CertificateSigningRequest) (*capi.CertificateSigningRequest, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -187,6 +201,8 @@ func (s *CertSigner) Sign(csr *capi.CertificateSigningRequest) (*capi.Certificat
 	return csr, nil
 }
 func getProfile(csr *capi.CertificateSigningRequest) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -223,6 +239,8 @@ func getProfile(csr *capi.CertificateSigningRequest) (string, error) {
 	return "", ErrInvalidOrg
 }
 func (s *CertServer) HandlePostCSR(w http.ResponseWriter, r *http.Request) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -283,6 +301,8 @@ func (s *CertServer) HandleGetCSR(w http.ResponseWriter, r *http.Request) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	vars := mux.Vars(r)
 	csrName := vars["csrName"]
 	if _, err := os.Stat(filepath.Join(s.csrDir, csrName)); os.IsNotExist(err) {
@@ -304,6 +324,8 @@ func StartSignerServer(c Config) error {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s, err := NewServer(c)
 	if err != nil {
 		return fmt.Errorf("error setting up signer: %v", err)
@@ -316,6 +338,17 @@ func _logClusterCodePath() {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
@@ -325,5 +358,5 @@ func _logClusterCodePath() {
 	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
-	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

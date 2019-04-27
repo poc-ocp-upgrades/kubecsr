@@ -231,6 +231,8 @@ func loadAllCrts(t *testing.T) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	loadCrt(caKeyBytes, caKeyFile, t)
 	loadCrt(caCrtBytes, caCrtFile, t)
 	loadCrt(caMetricsKeyBytes, caMetricsKeyFile, t)
@@ -241,11 +243,15 @@ func loadCrt(data []byte, filename string, t *testing.T) {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := ioutil.WriteFile(filename, data, 0644); err != nil {
 		t.Fatalf("error writing credentials to file: %v", err)
 	}
 }
 func TestNewSignerCA(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -271,6 +277,8 @@ func TestNewSignerCA(t *testing.T) {
 	}
 }
 func TestSign(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -329,9 +337,13 @@ func createCSR(csr []byte) *capi.CertificateSigningRequest {
 	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &capi.CertificateSigningRequest{Spec: capi.CertificateSigningRequestSpec{Request: csr, Usages: []capi.KeyUsage{capi.UsageSigning, capi.UsageKeyEncipherment, capi.UsageServerAuth, capi.UsageClientAuth}}}
 }
 func cleanUp(files SignerCAFiles) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
@@ -349,6 +361,8 @@ func cleanUp(files SignerCAFiles) error {
 	return nil
 }
 func gotError(err error) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	_logClusterCodePath()
