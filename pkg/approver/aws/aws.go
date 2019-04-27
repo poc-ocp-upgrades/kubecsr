@@ -2,7 +2,6 @@ package aws
 
 import (
 	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
@@ -13,19 +12,16 @@ import (
 )
 
 type awsCloud struct {
-	ec2 *ec2.EC2
-	asg *autoscaling.AutoScaling
+	ec2	*ec2.EC2
+	asg	*autoscaling.AutoScaling
 }
 
 func newAWSCloud(regionName string) (*awsCloud, error) {
-	creds := credentials.NewChainCredentials([]credentials.Provider{
-		&credentials.EnvProvider{},
-		&credentials.SharedCredentialsProvider{},
-		&ec2rolecreds.EC2RoleProvider{
-			Client: ec2metadata.New(session.New(&aws.Config{})),
-		},
-	})
-
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	creds := credentials.NewChainCredentials([]credentials.Provider{&credentials.EnvProvider{}, &credentials.SharedCredentialsProvider{}, &ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.New(&aws.Config{}))}})
 	if regionName == "" {
 		mc := ec2metadata.New(session.New(&aws.Config{}))
 		zone, err := mc.GetMetadata("placement/availability-zone")
@@ -37,46 +33,37 @@ func newAWSCloud(regionName string) (*awsCloud, error) {
 			return nil, err
 		}
 	}
-
-	awsConfig := &aws.Config{
-		Region:      &regionName,
-		Credentials: creds,
-	}
+	awsConfig := &aws.Config{Region: &regionName, Credentials: creds}
 	awsConfig = awsConfig.WithCredentialsChainVerboseErrors(true)
 	ec2 := ec2.New(session.New(awsConfig))
 	asg := autoscaling.New(session.New(awsConfig))
-
-	return &awsCloud{
-		ec2: ec2,
-		asg: asg,
-	}, nil
+	return &awsCloud{ec2: ec2, asg: asg}, nil
 }
-
 func (c *awsCloud) instanceID(nodeName string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	privateDNSName := nodeName
-	filters := []*ec2.Filter{
-		newEC2Filter("private-dns-name", privateDNSName),
-		newEC2Filter("instance-state-name", "running"),
-	}
-	req := &ec2.DescribeInstancesInput{
-		Filters: filters,
-	}
+	filters := []*ec2.Filter{newEC2Filter("private-dns-name", privateDNSName), newEC2Filter("instance-state-name", "running")}
+	req := &ec2.DescribeInstancesInput{Filters: filters}
 	instances, err := c.describeInstances(req)
 	if err != nil {
 		return "", err
 	}
-
 	if len(instances) == 0 {
 		return "", fmt.Errorf("no instance found for %s", nodeName)
 	}
 	if len(instances) > 1 {
 		return "", fmt.Errorf("multiple instances found for name: %s", nodeName)
 	}
-
 	return aws.StringValue(instances[0].InstanceId), nil
 }
-
 func (c *awsCloud) autoScalingGroupID(nodeName string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	instanceID, err := c.instanceID(nodeName)
 	if err != nil {
 		return "", err
@@ -84,12 +71,7 @@ func (c *awsCloud) autoScalingGroupID(nodeName string) (string, error) {
 	if instanceID == "" {
 		return "", fmt.Errorf("error got empty instance id from aws")
 	}
-
-	reqASI := &autoscaling.DescribeAutoScalingInstancesInput{
-		InstanceIds: []*string{
-			aws.String(instanceID),
-		},
-	}
+	reqASI := &autoscaling.DescribeAutoScalingInstancesInput{InstanceIds: []*string{aws.String(instanceID)}}
 	instances, err := c.describeAutoScalingInstances(reqASI)
 	if err != nil {
 		return "", err
@@ -100,12 +82,13 @@ func (c *awsCloud) autoScalingGroupID(nodeName string) (string, error) {
 	if len(instances) > 1 {
 		return "", fmt.Errorf("multiple auto scaling instances found for name: %s", nodeName)
 	}
-
 	return aws.StringValue(instances[0].AutoScalingGroupName), nil
 }
-
 func (c *awsCloud) describeInstances(request *ec2.DescribeInstancesInput) ([]*ec2.Instance, error) {
-	// Instances are paged
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	results := []*ec2.Instance{}
 	var nextToken *string
 	for {
@@ -113,11 +96,9 @@ func (c *awsCloud) describeInstances(request *ec2.DescribeInstancesInput) ([]*ec
 		if err != nil {
 			return nil, fmt.Errorf("error listing AWS instances: %q", err)
 		}
-
 		for _, reservation := range response.Reservations {
 			results = append(results, reservation.Instances...)
 		}
-
 		nextToken = response.NextToken
 		if aws.StringValue(nextToken) == "" {
 			break
@@ -126,8 +107,11 @@ func (c *awsCloud) describeInstances(request *ec2.DescribeInstancesInput) ([]*ec
 	}
 	return results, nil
 }
-
 func (c *awsCloud) describeAutoScalingInstances(request *autoscaling.DescribeAutoScalingInstancesInput) ([]*autoscaling.InstanceDetails, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	results := []*autoscaling.InstanceDetails{}
 	var nextToken *string
 	for {
@@ -135,9 +119,7 @@ func (c *awsCloud) describeAutoScalingInstances(request *autoscaling.DescribeAut
 		if err != nil {
 			return nil, fmt.Errorf("error listing AS instances: %q", err)
 		}
-
 		results = append(results, response.AutoScalingInstances...)
-
 		nextToken = response.NextToken
 		if aws.StringValue(nextToken) == "" {
 			break
@@ -146,21 +128,23 @@ func (c *awsCloud) describeAutoScalingInstances(request *autoscaling.DescribeAut
 	}
 	return results, nil
 }
-
-// Derives the region from a valid az name.
-// Returns an error if the az is known invalid (empty)
 func azToRegion(az string) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(az) < 1 {
 		return "", fmt.Errorf("invalid (empty) AZ")
 	}
 	region := az[:len(az)-1]
 	return region, nil
 }
-
 func newEC2Filter(name string, values ...string) *ec2.Filter {
-	filter := &ec2.Filter{
-		Name: aws.String(name),
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	filter := &ec2.Filter{Name: aws.String(name)}
 	for _, value := range values {
 		filter.Values = append(filter.Values, aws.String(value))
 	}

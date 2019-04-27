@@ -9,17 +9,15 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
 	capi "k8s.io/api/certificates/v1beta1"
 )
 
 var (
-	caCrtFile        = "ca.crt"
-	caKeyFile        = "ca.key"
-	caMetricsCrtFile = "metric-ca.crt"
-	caMetricsKeyFile = "metric-ca.key"
-
-	csrBytes = []byte(`-----BEGIN CERTIFICATE REQUEST-----
+	caCrtFile		= "ca.crt"
+	caKeyFile		= "ca.key"
+	caMetricsCrtFile	= "metric-ca.crt"
+	caMetricsKeyFile	= "metric-ca.key"
+	csrBytes		= []byte(`-----BEGIN CERTIFICATE REQUEST-----
 MIICojCCAYoCAQAwXTELMAkGA1UEBhMCWFgxFTATBgNVBAcMDERlZmF1bHQgQ2l0
 eTEaMBgGA1UECgwRc3lzdGVtOmV0Y2QtcGVlcnMxGzAZBgNVBAMMEnN5c3RlbTpl
 dGNkLXBlZXI6MTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANALpBiW
@@ -36,8 +34,7 @@ X6IGYVFVglScoQS4xQGiyhxzZhgAjKFsRaAWjcpU6LkSpF9org3KpZtcKeV/ZwZT
 5KuRy6rsTWvlX/8onttDqtsipBkyVKlBsrsnfO3A0XwhEt79h9fnxMK94K0quTVA
 jvINeymP
 -----END CERTIFICATE REQUEST-----`)
-
-	csrMetricsBytes = []byte(`-----BEGIN CERTIFICATE REQUEST-----
+	csrMetricsBytes	= []byte(`-----BEGIN CERTIFICATE REQUEST-----
 MIIEpjCCAo4CAQAwYTELMAkGA1UEBhMCWFgxFTATBgNVBAcMDERlZmF1bHQgQ2l0
 eTEcMBoGA1UECgwTc3lzdGVtOmV0Y2QtbWV0cmljczEdMBsGA1UEAwwUc3lzdGVt
 OmV0Y2QtbWV0cmljOjEwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDJ
@@ -64,8 +61,7 @@ Ba+1yisQjcSz21Zsl7lbm2MKfrR8cx5AoP2Xn75jGe9L+n6YEx2MEHZp7/s7X1hf
 Ax2vGHbg+P6Yof8alxqe2AHzAtlbUSmwXsf8efs/3Uey07x55fC7O42hj5VNLbfV
 qqOj7/EZleCtQplqyOwF8Mt6h4LZBE4lgB27HNtX5VAcZsUnVTtJrO0e
 -----END CERTIFICATE REQUEST-----`)
-
-	caCrtBytes = []byte(`-----BEGIN CERTIFICATE-----
+	caCrtBytes	= []byte(`-----BEGIN CERTIFICATE-----
 MIIFDTCCAvWgAwIBAgIJAMPkKOVfXGKZMA0GCSqGSIb3DQEBCwUAMBIxEDAOBgNV
 BAMMB2Zha2UtY2EwHhcNMTgwMjIyMTg1MTA3WhcNMjgwMjIwMTg1MTA3WjASMRAw
 DgYDVQQDDAdmYWtlLWNhMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA
@@ -95,8 +91,7 @@ iE6rkr//NhxuZeaBDItIRC4uRcSF8noeFkGuQGb22vf8HnwDKnNF9Ty6Zg8CfRVv
 Rt0zd4OjeRzVNivCQ3ilpj5uv2vob9+9svKVatdFYst93eaBvWGd1hbsev7T/3t3
 bA==
 -----END CERTIFICATE-----`)
-
-	caMetricsCrtBytes = []byte(`-----BEGIN CERTIFICATE-----
+	caMetricsCrtBytes	= []byte(`-----BEGIN CERTIFICATE-----
 MIIFXTCCA0WgAwIBAgIURQbfHSBCKeD2UL952fkS5lgYJowwDQYJKoZIhvcNAQEL
 BQAwPjELMAkGA1UEBhMCWFgxFTATBgNVBAcMDERlZmF1bHQgQ2l0eTEYMBYGA1UE
 CgwPZmFrZS1tZXRyaWNzLWNhMB4XDTE5MDMyMDExNTMyM1oXDTE5MDQxOTExNTMy
@@ -127,8 +122,7 @@ EMyCIbsp2niXwPLkqSOCKhpbOBlPYlfvEY2PivI9CF2FnFv7vyhqk6n7L79puKJk
 /aYkCM2BLtayR9wuunBEFGPwAZLIQKHk5MJSLsix9l0uV+N897agsKQ87Luxn1vw
 Rd1ImiuaAD0Dz9rSJQyZrzFGvZRCqTUC9c5Vp1/X8djW
 -----END CERTIFICATE-----`)
-
-	caKeyBytes = []byte(`-----BEGIN RSA PRIVATE KEY-----
+	caKeyBytes	= []byte(`-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEApOcWmKHVuJIy1mTWG4/PfDj1zL7YHpg2SQ4uIL2mUyGVT5sq
 Rkz1fPsDQKzm4iYspMad7rd/0hseNTENt+ZbmLUovnFeqQ/U5OGXnpzarLZexQEc
 bpw5xHoahQAFKrACarBOMXhShF828OqdbSiL9w9BTMs9dcLzu53AsA3dC6qDsW7m
@@ -179,8 +173,7 @@ Aef45gm4fR4GRShOxIKg2QG5M8d5EBWqY0tb2e9/G0fG8y77T8UjjgGMwdpKVwzI
 KA95ukt2rsMZ5ay6gC/lb2TYCvEyD9GXCpIW2OiC/KCW2MXltNWKGqE6ASRBWsdF
 vCuqdwASd/1MJWpe/v+PPcIJzSLRfDcPkIWfOJKBaeIagnSHKqGECIs+Jv8F
 -----END RSA PRIVATE KEY-----`)
-
-	caMetricsKeyBytes = []byte(`-----BEGIN RSA PRIVATE KEY-----
+	caMetricsKeyBytes	= []byte(`-----BEGIN RSA PRIVATE KEY-----
 MIIJKAIBAAKCAgEAyZEhO7Yfk7tupNZnuILlRfegg+8QNcbPbo0e/vyjBij2KvqD
 xWSjjF+cSc4mOLhdvTYad1U0ylYFPEDk+mNMmhuMo6egTwkl2NPxxFT3tmfO8XTw
 xlNr6weaHh1RUVw2dbw6Tg0NDPhfe2i6qUCl7bYQYxmhJiR/wweAakhjh/uXw04I
@@ -234,58 +227,35 @@ WXJu83PU1y34q/B/xwx0NApZNJPmPXKnINOjuj2SnkNqfuzopVJ4WIInfIw=
 )
 
 func loadAllCrts(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	loadCrt(caKeyBytes, caKeyFile, t)
 	loadCrt(caCrtBytes, caCrtFile, t)
 	loadCrt(caMetricsKeyBytes, caMetricsKeyFile, t)
 	loadCrt(caMetricsCrtBytes, caMetricsCrtFile, t)
 }
-
 func loadCrt(data []byte, filename string, t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := ioutil.WriteFile(filename, data, 0644); err != nil {
 		t.Fatalf("error writing credentials to file: %v", err)
 	}
 }
-
 func TestNewSignerCA(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type TestData struct {
 		SignerCAFiles
-		csrFileBytes []byte
-		want         string
+		csrFileBytes	[]byte
+		want		string
 	}
-
-	for _, test := range []TestData{
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, "", ""},
-			csrBytes,
-			"ok",
-		},
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, "", ""},
-			csrMetricsBytes,
-			"error",
-		},
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile},
-			csrMetricsBytes,
-			"ok",
-		},
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile},
-			csrBytes,
-			"ok",
-		},
-		{
-			SignerCAFiles{"", "", caMetricsCrtFile, caMetricsKeyFile},
-			csrBytes,
-			"error",
-		},
-		{
-			SignerCAFiles{"", "", caMetricsCrtFile, caMetricsKeyFile},
-			csrMetricsBytes,
-			"ok",
-		},
-	} {
-
+	for _, test := range []TestData{{SignerCAFiles{caCrtFile, caKeyFile, "", ""}, csrBytes, "ok"}, {SignerCAFiles{caCrtFile, caKeyFile, "", ""}, csrMetricsBytes, "error"}, {SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile}, csrMetricsBytes, "ok"}, {SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile}, csrBytes, "ok"}, {SignerCAFiles{"", "", caMetricsCrtFile, caMetricsKeyFile}, csrBytes, "error"}, {SignerCAFiles{"", "", caMetricsCrtFile, caMetricsKeyFile}, csrMetricsBytes, "ok"}} {
 		loadAllCrts(t)
 		caFiles := test.SignerCAFiles
 		csr := createCSR(test.csrFileBytes)
@@ -300,51 +270,22 @@ func TestNewSignerCA(t *testing.T) {
 		}
 	}
 }
-
 func TestSign(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type TestData struct {
 		SignerCAFiles
-		csrFileBytes []byte
-		caCrt        []byte
-		dnsName      string
-		want         string
+		csrFileBytes	[]byte
+		caCrt		[]byte
+		dnsName		string
+		want		string
 	}
-
-	for _, test := range []TestData{
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, "", ""},
-			csrBytes,
-			caCrtBytes,
-			"system:etcd-peer:1",
-			"ok",
-		},
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile},
-			csrMetricsBytes,
-			caMetricsCrtBytes,
-			"system:etcd-metric:1",
-			"ok",
-		},
-		{
-			SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile},
-			csrMetricsBytes,
-			caMetricsCrtBytes,
-			"google.com",
-			"error",
-		},
-	} {
-
+	for _, test := range []TestData{{SignerCAFiles{caCrtFile, caKeyFile, "", ""}, csrBytes, caCrtBytes, "system:etcd-peer:1", "ok"}, {SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile}, csrMetricsBytes, caMetricsCrtBytes, "system:etcd-metric:1", "ok"}, {SignerCAFiles{caCrtFile, caKeyFile, caMetricsCrtFile, caMetricsKeyFile}, csrMetricsBytes, caMetricsCrtBytes, "google.com", "error"}} {
 		loadAllCrts(t)
-
 		caFiles := test.SignerCAFiles
-		config := Config{
-			SignerCAFiles:          caFiles,
-			ListenAddress:          "0.0.0.0:6443",
-			EtcdMetricCertDuration: 1 * time.Hour,
-			EtcdPeerCertDuration:   1 * time.Hour,
-			EtcdServerCertDuration: 1 * time.Hour,
-		}
-
+		config := Config{SignerCAFiles: caFiles, ListenAddress: "0.0.0.0:6443", EtcdMetricCertDuration: 1 * time.Hour, EtcdPeerCertDuration: 1 * time.Hour, EtcdServerCertDuration: 1 * time.Hour}
 		csr := createCSR(test.csrFileBytes)
 		policy := signerPolicy(config)
 		signerCA, err := newSignerCA(&caFiles, csr)
@@ -355,7 +296,6 @@ func TestSign(t *testing.T) {
 		if err != nil {
 			t.Errorf("error setting up signer:%v", err)
 		}
-
 		signedCSR, errMsg := s.Sign(csr)
 		if errMsg != nil {
 			t.Errorf("error signing csr: %v", errMsg)
@@ -363,7 +303,6 @@ func TestSign(t *testing.T) {
 		if len(signedCSR.Status.Certificate) == 0 {
 			t.Errorf("csr not signed: %v", err)
 		}
-
 		roots := x509.NewCertPool()
 		ok := roots.AppendCertsFromPEM(test.caCrt)
 		if !ok {
@@ -373,39 +312,30 @@ func TestSign(t *testing.T) {
 		if block == nil {
 			t.Errorf("failed to parse certificate PEM")
 		}
-
-		opts := x509.VerifyOptions{
-			DNSName: test.dnsName,
-			Roots:   roots,
-		}
+		opts := x509.VerifyOptions{DNSName: test.dnsName, Roots: roots}
 		cert, _ := x509.ParseCertificate(block.Bytes)
 		_, verr := cert.Verify(opts)
 		got := gotError(verr)
 		if got != test.want {
 			t.Errorf("TestSign want %s got %s err %v", test.want, got, verr)
 		}
-		// cleanup
 		if err := cleanUp(caFiles); err != nil {
 			t.Fatalf("error deleting files %v", err)
 		}
 	}
 }
-
 func createCSR(csr []byte) *capi.CertificateSigningRequest {
-	return &capi.CertificateSigningRequest{
-		Spec: capi.CertificateSigningRequestSpec{
-			Request: csr,
-			Usages: []capi.KeyUsage{
-				capi.UsageSigning,
-				capi.UsageKeyEncipherment,
-				capi.UsageServerAuth,
-				capi.UsageClientAuth,
-			},
-		},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &capi.CertificateSigningRequest{Spec: capi.CertificateSigningRequestSpec{Request: csr, Usages: []capi.KeyUsage{capi.UsageSigning, capi.UsageKeyEncipherment, capi.UsageServerAuth, capi.UsageClientAuth}}}
 }
-
 func cleanUp(files SignerCAFiles) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	f := reflect.ValueOf(files)
 	for i := 0; i < f.NumField(); i++ {
 		file := fmt.Sprintf("%s", f.Field(i).Interface())
@@ -418,8 +348,11 @@ func cleanUp(files SignerCAFiles) error {
 	}
 	return nil
 }
-
 func gotError(err error) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch t := err.(type) {
 	case nil:
 		return "ok"
