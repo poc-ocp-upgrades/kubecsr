@@ -4,37 +4,31 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
 	signer "github.com/coreos/kubecsr/pkg/certsigner"
 	"github.com/spf13/cobra"
 )
 
 var (
-	serveCmd = &cobra.Command{
-		Use:     "serve --FLAGS",
-		Short:   "serve signer server",
-		Long:    "This command runs an instance of the signer server which accepts certificate requests and responds with an approved CSR",
-		PreRunE: validateServeOpts,
-		RunE:    runCmdServe,
-	}
-
-	serveOpts struct {
-		caCrtFile     string
-		caKeyFile     string
-		mCACrtFile    string
-		mCAKeyFile    string
-		mCASigner     bool
-		sCrtFiles     []string
-		sKeyFiles     []string
-		addr          string
-		peerCertDur   string
-		serverCertDur string
-		metricCertDur string
-		csrDir        string
+	serveCmd	= &cobra.Command{Use: "serve --FLAGS", Short: "serve signer server", Long: "This command runs an instance of the signer server which accepts certificate requests and responds with an approved CSR", PreRunE: validateServeOpts, RunE: runCmdServe}
+	serveOpts	struct {
+		caCrtFile	string
+		caKeyFile	string
+		mCACrtFile	string
+		mCAKeyFile	string
+		mCASigner	bool
+		sCrtFiles	[]string
+		sKeyFiles	[]string
+		addr		string
+		peerCertDur	string
+		serverCertDur	string
+		metricCertDur	string
+		csrDir		string
 	}
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rootCmd.AddCommand(serveCmd)
 	serveCmd.PersistentFlags().StringVar(&serveOpts.caCrtFile, "cacrt", "", "CA certificate file for signer")
 	serveCmd.PersistentFlags().StringVar(&serveOpts.caKeyFile, "cakey", "", "CA private key file for signer")
@@ -48,9 +42,9 @@ func init() {
 	serveCmd.PersistentFlags().StringVar(&serveOpts.serverCertDur, "servercertdur", "8760h", "Certificate duration for etcd server certs (defaults to 365 days)")
 	serveCmd.PersistentFlags().StringVar(&serveOpts.csrDir, "csrdir", "", "Directory location where signer will save CSRs.")
 }
-
-// validateServeOpts validates the user flag values given to the signer server
 func validateServeOpts(cmd *cobra.Command, args []string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	caPair := 0
 	if serveOpts.caCrtFile != "" && serveOpts.caKeyFile != "" {
 		caPair++
@@ -61,7 +55,6 @@ func validateServeOpts(cmd *cobra.Command, args []string) error {
 	if caPair == 0 {
 		return errors.New("no signer CA flags passed one cert/key pair is required")
 	}
-
 	if cl, kl := len(serveOpts.sCrtFiles), len(serveOpts.sKeyFiles); cl == 0 || kl == 0 {
 		return errors.New("at least one pair of --servcrt and --servkey is required")
 	} else if cl != kl {
@@ -72,14 +65,13 @@ func validateServeOpts(cmd *cobra.Command, args []string) error {
 	}
 	return nil
 }
-
-// runCmdServe invokes an instance of the signer with the given configuration arguments
 func runCmdServe(cmd *cobra.Command, args []string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pCertDur, err := time.ParseDuration(serveOpts.peerCertDur)
 	if err != nil {
 		return fmt.Errorf("error parsing duration for etcd peer cert: %v", err)
 	}
-
 	sCertDur, err := time.ParseDuration(serveOpts.serverCertDur)
 	if err != nil {
 		return fmt.Errorf("error parsing duration for etcd server cert: %v", err)
@@ -88,30 +80,14 @@ func runCmdServe(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing duration for etcd metric cert: %v", err)
 	}
-
-	ca := signer.SignerCAFiles{
-		CACert:       serveOpts.caCrtFile,
-		CAKey:        serveOpts.caKeyFile,
-		MetricCACert: serveOpts.mCACrtFile,
-		MetricCAKey:  serveOpts.mCAKeyFile,
-	}
+	ca := signer.SignerCAFiles{CACert: serveOpts.caCrtFile, CAKey: serveOpts.caKeyFile, MetricCACert: serveOpts.mCACrtFile, MetricCAKey: serveOpts.mCAKeyFile}
 	servercerts := make([]signer.CertKey, len(serveOpts.sCrtFiles))
 	for idx := range serveOpts.sCrtFiles {
 		servercerts[idx] = signer.CertKey{CertFile: serveOpts.sCrtFiles[idx], KeyFile: serveOpts.sKeyFiles[idx]}
 	}
-	c := signer.Config{
-		SignerCAFiles:          ca,
-		ServerCertKeys:         servercerts,
-		ListenAddress:          serveOpts.addr,
-		EtcdMetricCertDuration: mCertDur,
-		EtcdPeerCertDuration:   pCertDur,
-		EtcdServerCertDuration: sCertDur,
-		CSRDir:                 serveOpts.csrDir,
-	}
-
+	c := signer.Config{SignerCAFiles: ca, ServerCertKeys: servercerts, ListenAddress: serveOpts.addr, EtcdMetricCertDuration: mCertDur, EtcdPeerCertDuration: pCertDur, EtcdServerCertDuration: sCertDur, CSRDir: serveOpts.csrDir}
 	if err := signer.StartSignerServer(c); err != nil {
 		return fmt.Errorf("error starting signer: %v", err)
 	}
-
 	return nil
 }
