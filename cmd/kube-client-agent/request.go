@@ -5,31 +5,25 @@ import (
 	"fmt"
 	"net"
 	"strings"
-
 	agent "github.com/coreos/kubecsr/pkg/certagent"
 	"github.com/spf13/cobra"
 )
 
 var (
-	requestCmd = &cobra.Command{
-		Use:     "request --FLAGS",
-		Short:   "Request a signed certificate",
-		Long:    "This command generates a valid CSR for the etcd node it is running on and provides the CSR to a signer for approval",
-		PreRunE: validateRequestOpts,
-		RunE:    runCmdRequest,
-	}
-
-	requestOpts struct {
-		commonName  string
-		orgName     string
-		dnsNames    string
-		ipAddresses string
-		assetsDir   string
-		kubeconfig  string
+	requestCmd	= &cobra.Command{Use: "request --FLAGS", Short: "Request a signed certificate", Long: "This command generates a valid CSR for the etcd node it is running on and provides the CSR to a signer for approval", PreRunE: validateRequestOpts, RunE: runCmdRequest}
+	requestOpts	struct {
+		commonName	string
+		orgName		string
+		dnsNames	string
+		ipAddresses	string
+		assetsDir	string
+		kubeconfig	string
 	}
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rootCmd.AddCommand(requestCmd)
 	requestCmd.PersistentFlags().StringVar(&requestOpts.commonName, "commonname", "", "Common name for the certificate being requested")
 	requestCmd.PersistentFlags().StringVar(&requestOpts.orgName, "orgname", "", "CA private key file for signer")
@@ -38,8 +32,9 @@ func init() {
 	requestCmd.PersistentFlags().StringVar(&requestOpts.assetsDir, "assetsdir", "", "Directory location for the agent where it stores signed certs")
 	requestCmd.PersistentFlags().StringVar(&requestOpts.kubeconfig, "kubeconfig", "", "Path to the kubeconfig file to connect to apiserver. If \"\", InClusterConfig is used which uses the service account kubernetes gives to pods.")
 }
-
 func validateRequestOpts(cmd *cobra.Command, args []string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if requestOpts.ipAddresses == "" && requestOpts.dnsNames == "" {
 		return errors.New("need to provide either both or atleast one of --ipaddresses and --dnsnames flag")
 	}
@@ -56,14 +51,11 @@ func validateRequestOpts(cmd *cobra.Command, args []string) error {
 		return errors.New("missing required flag: --kubeconfig")
 	}
 	return nil
-
 }
-
-// runCmdRequest starts an instance of the agent which requests a CSR to be approved by the signer
 func runCmdRequest(cmd *cobra.Command, args []string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var ips []net.IP
-
-	// Empty ip addresses are also allowed.
 	if requestOpts.ipAddresses != "" {
 		ipAddrs := strings.Split(requestOpts.ipAddresses, ",")
 		for _, addr := range ipAddrs {
@@ -74,14 +66,7 @@ func runCmdRequest(cmd *cobra.Command, args []string) error {
 			ips = append(ips, ip)
 		}
 	}
-
-	config := agent.CSRConfig{
-		CommonName:  requestOpts.commonName,
-		OrgName:     requestOpts.orgName,
-		DNSNames:    strings.Split(requestOpts.dnsNames, ","),
-		IPAddresses: ips,
-		AssetsDir:   requestOpts.assetsDir,
-	}
+	config := agent.CSRConfig{CommonName: requestOpts.commonName, OrgName: requestOpts.orgName, DNSNames: strings.Split(requestOpts.dnsNames, ","), IPAddresses: ips, AssetsDir: requestOpts.assetsDir}
 	a, err := agent.NewAgent(config, requestOpts.kubeconfig)
 	if err != nil {
 		return fmt.Errorf("error creating agent: %s", err)
